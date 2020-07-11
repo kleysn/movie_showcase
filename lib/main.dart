@@ -11,16 +11,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return NeumorphicApp(
       title: 'Movie Showcase',
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.system,
       theme: NeumorphicThemeData(
         baseColor: Color(0xFFFFFFFF),
         lightSource: LightSource.topLeft,
+        shadowLightColor: Colors.black45,
         depth: 10,
+        defaultTextColor: Colors.black,
       ),
       darkTheme: NeumorphicThemeData(
         baseColor: Color(0xFF3E3E3E),
         lightSource: LightSource.topLeft,
-        depth: 6,
+        shadowDarkColor: Colors.black,
+        shadowLightColor: Colors.black,
+        defaultTextColor: Colors.white,
+        depth: 10,
       ),
       debugShowCheckedModeBanner: false,
       home: Home(),
