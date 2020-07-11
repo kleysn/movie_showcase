@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_statusbar_text_color (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_statusbar_text_color (from `.symlinks/plugins/flutter_statusbar_text_color/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_statusbar_text_color:
+    :path: ".symlinks/plugins/flutter_statusbar_text_color/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_statusbar_text_color: bfeb27e69d90920ed6ebe0cbe83466011c75c4f4
+
+PODFILE CHECKSUM: c34e2287a9ccaa606aeceab922830efb9a6ff69a
+
+COCOAPODS: 1.9.1
