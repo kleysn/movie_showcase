@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_statusbar_text_color/flutter_statusbar_text_color.dart';
+import 'package:movie_showcase/screens/details.dart';
 import 'package:movie_showcase/screens/theme_utils.dart';
 
 class Home extends StatefulWidget {
@@ -109,18 +110,35 @@ class _HomeState extends State<Home> {
   }
 
   Widget _cardContent({@required int index}) {
-    return Padding(
-      padding: EdgeInsets.only(left: 10.0, right: 10.0),
-      child: Stack(
-        children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.network(
-              'http://br.web.img3.acsta.net/medias/nmedia/18/90/93/20/20120876.jpg',
-              fit: BoxFit.fitWidth,
-            ),
+    String heroTag = 'cover$index';
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) {
+              return Details(
+                heroTag: heroTag,
+              );
+            },
           ),
-        ],
+        );
+      },
+      child: Padding(
+        padding: EdgeInsets.only(left: 10.0, right: 10.0),
+        child: Stack(
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Hero(
+                tag: heroTag,
+                child: Image.network(
+                  'http://br.web.img3.acsta.net/medias/nmedia/18/90/93/20/20120876.jpg',
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
