@@ -24,6 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  rxdart: ^0.24.1
+  dio: ^3.0.9
   flutter_neumorphic: ^3.0.1
   flutter_statusbar_text_color: ^0.1.2
   cupertino_icons: ^0.1.3

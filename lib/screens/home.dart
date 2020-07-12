@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_statusbar_text_color/flutter_statusbar_text_color.dart';
+import 'package:movie_showcase/blocs/home_bloc.dart';
+import 'package:movie_showcase/models/filme.dart';
 import 'package:movie_showcase/screens/details.dart';
 import 'package:movie_showcase/screens/theme_utils.dart';
 
@@ -11,14 +14,39 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   PageController _pageController;
+  HomeBloc _homeBloc;
+  List<Filme> _filmes;
+  bool inicializado = false;
 
   @override
   void initState() {
+    _homeBloc = HomeBloc();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageController.removeListener(pageListener);
+    _homeBloc.dispose();
+    super.dispose();
+  }
+
+  void inicializar() {
+    int initialPage = inicializado
+        ? _pageController.page.ceil()
+        : (_filmes.length / 2).ceil();
     _pageController = PageController(
-      initialPage: 2,
+      initialPage: initialPage,
       viewportFraction: 0.75,
     );
-    super.initState();
+    _pageController.addListener(pageListener);
+    _homeBloc.updateCurrentMovie(filme: _filmes[initialPage]);
+    inicializado = true;
+  }
+
+  void pageListener() {
+    int currentPage = _pageController.page.toInt();
+    _homeBloc.updateCurrentMovie(filme: _filmes[currentPage]);
   }
 
   @override
@@ -58,11 +86,34 @@ class _HomeState extends State<Home> {
         backgroundColor: NeumorphicTheme.baseColor(context),
       ),
       backgroundColor: NeumorphicTheme.baseColor(context),
-      body: _coreLayout(),
+      body: _layoutBuilder(),
     );
   }
 
-  Widget _coreLayout() {
+  Widget _layoutBuilder() {
+    return StreamBuilder<List<Filme>>(
+      stream: _homeBloc.moviesStream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.data == []) {
+          return Center(
+            child: Text('Não foi possível carregar os filmes'),
+          );
+        }
+
+        _filmes = snapshot.data;
+        inicializar();
+        return _coreLayout(filmes: snapshot.data);
+      },
+    );
+  }
+
+  Widget _coreLayout({@required List<Filme> filmes}) {
     double _screenHeight = MediaQuery.of(context).size.height;
     return Column(
       children: <Widget>[
@@ -78,49 +129,79 @@ class _HomeState extends State<Home> {
               color: Colors.transparent,
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: 5,
+                itemCount: filmes.length,
                 itemBuilder: (context, index) {
-                  return _cardContent(index: index);
+                  return _movieCover(index: index, filme: filmes[index]);
                 },
               ),
             ),
           ),
         ),
-        Column(
-          children: <Widget>[
-            Text(
-              'O poderoso chefão',
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-                color: NeumorphicTheme.defaultTextColor(context),
-              ),
-            ),
-            Text(
-              'Ação / Aventura',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: NeumorphicTheme.defaultTextColor(context),
-              ),
-            ),
-          ],
+        StreamBuilder(
+          stream: _homeBloc.currentMovieStream,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Container(
+                color: Colors.amber,
+              );
+            }
+            Filme _filmeAtual = snapshot.data;
+            return Column(
+              children: <Widget>[
+                Container(height: 5.0),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Text(
+                    _filmeAtual.titulo,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                      color: NeumorphicTheme.defaultTextColor(context),
+                    ),
+                  ),
+                ),
+                Container(height: 5.0),
+                Text(
+                  _filmeAtual.genero,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: NeumorphicTheme.defaultTextColor(context)
+                        .withOpacity(.7),
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+                Container(
+                  height: 10.0,
+                ),
+                Text(
+                  '${getMonthName(number: _filmeAtual.data.substring(3, 5))} ${_filmeAtual.data.substring(_filmeAtual.data.length - 4)}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 18.0,
+                    color: NeumorphicTheme.defaultTextColor(context),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ],
     );
   }
 
-  Widget _cardContent({@required int index}) {
+  Widget _movieCover({@required int index, @required Filme filme}) {
     String heroTag = 'cover$index';
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) {
-              return Details(
-                heroTag: heroTag,
-              );
-            },
-          ),
+          CupertinoPageRoute(builder: (_) {
+            return Details(
+              heroTag: heroTag,
+              filme: filme,
+            );
+          }),
         );
       },
       child: Padding(
@@ -131,9 +212,12 @@ class _HomeState extends State<Home> {
               borderRadius: BorderRadius.circular(8.0),
               child: Hero(
                 tag: heroTag,
-                child: Image.network(
-                  'http://br.web.img3.acsta.net/medias/nmedia/18/90/93/20/20120876.jpg',
-                  fit: BoxFit.fitWidth,
+                child: Container(
+                  height: 400.0,
+                  child: Image.network(
+                    filme.poster,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -159,5 +243,36 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  String getMonthName({@required String number}) {
+    switch (number) {
+      case '01':
+        return 'JANEIRO';
+      case '02':
+        return 'FEVEREIRO';
+      case '03':
+        return 'MARÇO';
+      case '04':
+        return 'ABRIL';
+      case '05':
+        return 'MAIO';
+      case '06':
+        return 'JUNHO';
+      case '07':
+        return 'JULHO';
+      case '08':
+        return 'AGOSTO';
+      case '09':
+        return 'SETEMBRO';
+      case '10':
+        return 'OUTUBRO';
+      case '11':
+        return 'NOVEMBRO';
+      case '12':
+        return 'DEZEMBRO';
+      default:
+        return '';
+    }
   }
 }

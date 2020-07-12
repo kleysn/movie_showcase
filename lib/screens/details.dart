@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:movie_showcase/models/filme.dart';
 
 class Details extends StatefulWidget {
   final String heroTag;
+  final Filme filme;
 
-  const Details({Key key, this.heroTag}) : super(key: key);
+  const Details({
+    Key key,
+    this.heroTag,
+    this.filme,
+  }) : super(key: key);
 
   @override
   _DetailsState createState() => _DetailsState();
@@ -32,11 +38,14 @@ class _DetailsState extends State<Details> {
               child: Hero(
                 tag: widget.heroTag,
                 child: Image.network(
-                  'http://br.web.img3.acsta.net/medias/nmedia/18/90/93/20/20120876.jpg',
+                  widget.filme.poster,
                   fit: BoxFit.fitWidth,
                 ),
               ),
             ),
+            backgroundColor: NeumorphicTheme.baseColor(context),
+            elevation: 10.0,
+            forceElevated: true,
           ),
         ],
       ),
