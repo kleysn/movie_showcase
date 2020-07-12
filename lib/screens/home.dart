@@ -4,6 +4,7 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_statusbar_text_color/flutter_statusbar_text_color.dart';
 import 'package:movie_showcase/blocs/home_bloc.dart';
 import 'package:movie_showcase/models/filme.dart';
+import 'package:movie_showcase/screens/bookmark_icon.dart';
 import 'package:movie_showcase/screens/details.dart';
 import 'package:movie_showcase/screens/theme_utils.dart';
 
@@ -32,12 +33,14 @@ class _HomeState extends State<Home> {
   }
 
   void inicializar() {
+    double screenWidth = MediaQuery.of(context).size.width;
     int initialPage = inicializado
         ? _pageController.page.ceil()
         : (_filmes.length / 2).ceil();
     _pageController = PageController(
       initialPage: initialPage,
-      viewportFraction: 0.75,
+      viewportFraction:
+          screenWidth > 370 ? (screenWidth / 500) : (screenWidth / 600),
     );
     _pageController.addListener(pageListener);
     _homeBloc.updateCurrentMovie(filme: _filmes[initialPage]);
@@ -59,6 +62,7 @@ class _HomeState extends State<Home> {
           'Movie Showcase',
           style: TextStyle(color: NeumorphicTheme.defaultTextColor(context)),
         ),
+        centerTitle: true,
         actions: <Widget>[
           InkWell(
             child: Padding(
@@ -192,14 +196,13 @@ class _HomeState extends State<Home> {
   }
 
   Widget _movieCover({@required int index, @required Filme filme}) {
-    String heroTag = 'cover$index';
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          CupertinoPageRoute(builder: (_) {
+          MaterialPageRoute(builder: (_) {
             return Details(
-              heroTag: heroTag,
               filme: filme,
+              index: index,
             );
           }),
         );
@@ -211,9 +214,10 @@ class _HomeState extends State<Home> {
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Hero(
-                tag: heroTag,
+                tag: 'heroCover$index',
                 child: Container(
                   height: 400.0,
+                  width: 300.0,
                   child: Image.network(
                     filme.poster,
                     fit: BoxFit.cover,
@@ -221,25 +225,17 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
+            Positioned(
+              top: 8.0,
+              right: 8.0,
+              child: Hero(
+                tag: 'heroBookmark$index',
+                child: BookmarkIcon(
+                  title: filme.titulo,
+                ),
+              ),
+            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _button() {
-    return NeumorphicButton(
-      child: Text(
-        'Clique para mudar o tema',
-        style: TextStyle(
-          color: NeumorphicTheme.defaultTextColor(context),
-        ),
-      ),
-      provideHapticFeedback: true,
-      style: NeumorphicStyle(
-        shape: NeumorphicShape.flat,
-        boxShape: NeumorphicBoxShape.roundRect(
-          BorderRadius.circular(10.0),
         ),
       ),
     );

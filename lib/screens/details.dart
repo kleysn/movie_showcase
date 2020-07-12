@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:movie_showcase/models/filme.dart';
+import 'package:movie_showcase/screens/bookmark_icon.dart';
 
 class Details extends StatefulWidget {
-  final String heroTag;
   final Filme filme;
+  final int index;
 
   const Details({
     Key key,
-    this.heroTag,
     this.filme,
+    this.index,
   }) : super(key: key);
 
   @override
@@ -17,16 +18,6 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +27,7 @@ class _DetailsState extends State<Details> {
             expandedHeight: MediaQuery.of(context).size.height * 0.45,
             flexibleSpace: Container(
               child: Hero(
-                tag: widget.heroTag,
+                tag: 'heroCover${widget.index}',
                 child: Image.network(
                   widget.filme.poster,
                   fit: BoxFit.fitWidth,
@@ -46,6 +37,17 @@ class _DetailsState extends State<Details> {
             backgroundColor: NeumorphicTheme.baseColor(context),
             elevation: 10.0,
             forceElevated: true,
+            actions: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: Hero(
+                  tag: 'heroBookmark${widget.index}',
+                  child: BookmarkIcon(
+                    title: widget.filme.titulo,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
