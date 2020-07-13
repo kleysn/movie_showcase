@@ -80,11 +80,6 @@ class _HomeState extends State<Home> {
                       ? ThemeMode.light
                       : ThemeMode.dark;
               ThemeUtils.of(context).statusBarColorAccordingToTheme();
-              // NeumorphicTheme.of(context).isUsingDark
-              //     ? FlutterStatusbarTextColor.setTextColor(
-              //         FlutterStatusbarTextColor.dark)
-              //     : FlutterStatusbarTextColor.setTextColor(
-              //         FlutterStatusbarTextColor.light);
             },
           ),
         ],

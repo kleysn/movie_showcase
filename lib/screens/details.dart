@@ -113,11 +113,19 @@ class _DetailsState extends State<Details> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('adorocinema.com'),
+                      Text(
+                        'adorocinema.com',
+                        style: TextStyle(
+                          color: NeumorphicTheme.defaultTextColor(context),
+                        ),
+                      ),
                       Container(
                         width: 5.0,
                       ),
-                      Icon(Icons.link),
+                      Icon(
+                        Icons.link,
+                        color: NeumorphicTheme.defaultTextColor(context),
+                      ),
                     ],
                   ),
                   onPressed: () async {

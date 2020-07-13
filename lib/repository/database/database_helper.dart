@@ -74,8 +74,7 @@ class DatabaseHelper {
 
   Future<void> insertBookmark({@required String title}) async {
     Map<String, dynamic> row = {DatabaseHelper.title: title};
-    int afr = await insert(row);
-    print(afr);
+    await insert(row);
   }
 
   Future<void> getAllBookmarks() async {
@@ -85,7 +84,6 @@ class DatabaseHelper {
 
   Future<void> deleteBookmark({@required String title}) async {
     final rowsDeleted = await delete(title);
-    await delete('title');
     print('deleted $rowsDeleted row(s): title $title');
   }
 
