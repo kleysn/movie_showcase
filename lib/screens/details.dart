@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:movie_showcase/models/filme.dart';
-import 'package:movie_showcase/screens/bookmark_icon.dart';
+import 'package:movie_showcase/widgets/bookmark_icon.dart';
+import 'package:movie_showcase/widgets/utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Details extends StatefulWidget {
   final Filme filme;
@@ -48,6 +50,87 @@ class _DetailsState extends State<Details> {
                 ),
               ),
             ],
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, left: 12.0),
+                  child: Text(
+                    widget.filme.titulo,
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                      color: NeumorphicTheme.defaultTextColor(context),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, left: 12.0, right: 10.0),
+                  child: Text(
+                    '${widget.filme.genero}  •  ${Utils.getMonthName(number: widget.filme.data.substring(3, 5)).toLowerCase()} ${widget.filme.data.substring(widget.filme.data.length - 4)}',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: NeumorphicTheme.defaultTextColor(context),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 12.0, right: 10.0, top: 20.0),
+                  child: Container(
+                    height: 0.2,
+                    color: NeumorphicTheme.defaultTextColor(context)
+                        .withOpacity(.6),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0, left: 12.0),
+                  child: Text(
+                    'Sinopse',
+                    style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.w300,
+                      color: NeumorphicTheme.defaultTextColor(context),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, left: 12.0, right: 10.0),
+                  child: Text(
+                    widget.filme.sinopseFull.trim(),
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: NeumorphicTheme.defaultTextColor(context),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 20.0,
+                ),
+                NeumorphicButton(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('adorocinema.com'),
+                      Container(
+                        width: 5.0,
+                      ),
+                      Icon(Icons.link),
+                    ],
+                  ),
+                  onPressed: () async {
+                    if (await canLaunch(widget.filme.link)) {
+                      await launch(widget.filme.link);
+                    }
+                  },
+                ),
+                Container(
+                  height: 5.0,
+                ),
+              ],
+            ),
           ),
         ],
       ),

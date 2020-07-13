@@ -22,7 +22,6 @@ class _BookmarkIconState extends State<BookmarkIcon> {
         if (snapshot.data == null) {
           return Container();
         }
-        print(snapshot.data);
         bookmarked = snapshot.data;
         return GestureDetector(
           child: Icon(

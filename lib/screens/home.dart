@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:flutter_statusbar_text_color/flutter_statusbar_text_color.dart';
 import 'package:movie_showcase/blocs/home_bloc.dart';
 import 'package:movie_showcase/models/filme.dart';
-import 'package:movie_showcase/screens/bookmark_icon.dart';
 import 'package:movie_showcase/screens/details.dart';
 import 'package:movie_showcase/screens/theme_utils.dart';
+import 'package:movie_showcase/widgets/bookmark_icon.dart';
+import 'package:movie_showcase/widgets/utils.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -78,11 +79,12 @@ class _HomeState extends State<Home> {
                   NeumorphicTheme.isUsingDark(context)
                       ? ThemeMode.light
                       : ThemeMode.dark;
-              NeumorphicTheme.of(context).isUsingDark
-                  ? FlutterStatusbarTextColor.setTextColor(
-                      FlutterStatusbarTextColor.dark)
-                  : FlutterStatusbarTextColor.setTextColor(
-                      FlutterStatusbarTextColor.light);
+              ThemeUtils.of(context).statusBarColorAccordingToTheme();
+              // NeumorphicTheme.of(context).isUsingDark
+              //     ? FlutterStatusbarTextColor.setTextColor(
+              //         FlutterStatusbarTextColor.dark)
+              //     : FlutterStatusbarTextColor.setTextColor(
+              //         FlutterStatusbarTextColor.light);
             },
           ),
         ],
@@ -99,9 +101,7 @@ class _HomeState extends State<Home> {
       stream: _homeBloc.moviesStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return Utils.mainShimmer(context: context);
         }
 
         if (snapshot.data == []) {
@@ -179,7 +179,7 @@ class _HomeState extends State<Home> {
                   height: 10.0,
                 ),
                 Text(
-                  '${getMonthName(number: _filmeAtual.data.substring(3, 5))} ${_filmeAtual.data.substring(_filmeAtual.data.length - 4)}',
+                  '${Utils.getMonthName(number: _filmeAtual.data.substring(3, 5))} ${_filmeAtual.data.substring(_filmeAtual.data.length - 4)}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.w300,
@@ -221,6 +221,21 @@ class _HomeState extends State<Home> {
                   child: Image.network(
                     filme.poster,
                     fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
+                      return Shimmer.fromColors(
+                        child: Container(
+                          color: NeumorphicTheme.isUsingDark(context)
+                              ? Colors.grey
+                              : Colors.grey.withOpacity(.3),
+                        ),
+                        baseColor: Colors.black26,
+                        highlightColor: Colors.white12,
+                      );
+                    },
                   ),
                 ),
               ),
@@ -239,36 +254,5 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-  }
-
-  String getMonthName({@required String number}) {
-    switch (number) {
-      case '01':
-        return 'JANEIRO';
-      case '02':
-        return 'FEVEREIRO';
-      case '03':
-        return 'MARÇO';
-      case '04':
-        return 'ABRIL';
-      case '05':
-        return 'MAIO';
-      case '06':
-        return 'JUNHO';
-      case '07':
-        return 'JULHO';
-      case '08':
-        return 'AGOSTO';
-      case '09':
-        return 'SETEMBRO';
-      case '10':
-        return 'OUTUBRO';
-      case '11':
-        return 'NOVEMBRO';
-      case '12':
-        return 'DEZEMBRO';
-      default:
-        return '';
-    }
   }
 }
