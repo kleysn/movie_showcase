@@ -18,6 +18,7 @@ class HomeBloc {
   }
 
   void getMovies() async {
+    _moviesController.sink.add(null);
     MovieResponse response = await _movieApiProvider.getMovies();
     _moviesController.sink.add(response.filmes);
   }

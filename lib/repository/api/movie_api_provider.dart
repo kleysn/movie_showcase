@@ -6,16 +6,16 @@ class MovieApiProvider {
   final Dio _dio = Dio();
 
   Future<MovieResponse> getMovies() async {
+    Response response;
     try {
-      Response response = await _dio.get(_endpoint).timeout(
-            Duration(seconds: 30),
-            onTimeout: () => Response(
-              statusMessage: 'Timeout',
-              data: MovieResponse(filmes: []),
-            ),
+      response = await _dio.get(_endpoint).timeout(
+            Duration(seconds: 1),
+            onTimeout: () => null,
           );
-      print(response.toString());
-      return MovieResponse.fromJson(response?.data);
+      if (response != null) {
+        return MovieResponse.fromJson(response.data);
+      }
+      return MovieResponse(filmes: []);
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       return MovieResponse(filmes: []);

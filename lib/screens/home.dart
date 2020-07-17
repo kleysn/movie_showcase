@@ -95,13 +95,41 @@ class _HomeState extends State<Home> {
     return StreamBuilder<List<Filme>>(
       stream: _homeBloc.moviesStream,
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.data == null) {
           return Utils.mainShimmer(context: context);
         }
 
-        if (snapshot.data == []) {
+        if (snapshot.data.isEmpty) {
           return Center(
-            child: Text('Não foi possível carregar os filmes'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Não foi possível carregar os filmes',
+                  style: TextStyle(
+                    color: NeumorphicTheme.defaultTextColor(context),
+                    fontSize: 16.0,
+                  ),
+                ),
+                Container(
+                  height: 20.0,
+                ),
+                NeumorphicButton(
+                  child: Text(
+                    'Tentar novamente',
+                    style: TextStyle(
+                      color: NeumorphicTheme.defaultTextColor(context),
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  style: NeumorphicStyle(
+                      color: NeumorphicTheme.baseColor(context)),
+                  onPressed: () {
+                    _homeBloc.getMovies();
+                  },
+                ),
+              ],
+            ),
           );
         }
 

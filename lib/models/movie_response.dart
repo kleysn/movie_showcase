@@ -5,13 +5,15 @@ class MovieResponse {
 
   MovieResponse({this.filmes});
 
-  MovieResponse.fromJson(Map<String, dynamic> json) {
+  static MovieResponse fromJson(Map<String, dynamic> json) {
+    MovieResponse model = MovieResponse();
     if (json['filmes'] != null) {
-      filmes = List<Filme>();
+      model.filmes = List<Filme>();
       json['filmes'].forEach((v) {
-        filmes.add(Filme.fromJson(v));
+        model.filmes.add(Filme.fromJson(v));
       });
     }
+    return model;
   }
 
   Map<String, dynamic> toJson() {
