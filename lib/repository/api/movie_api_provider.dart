@@ -9,7 +9,7 @@ class MovieApiProvider {
     Response response;
     try {
       response = await _dio.get(_endpoint).timeout(
-            Duration(seconds: 1),
+            Duration(seconds: 30),
             onTimeout: () => null,
           );
       if (response != null) {
